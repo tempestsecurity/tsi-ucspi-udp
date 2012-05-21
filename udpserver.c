@@ -35,7 +35,6 @@
 
 int verbosity = 1;
 int flagkillopts = 1;
-int flagdelay = 1;
 char *banner = "";
 int flagremoteinfo = 1;
 int flagremotehost = 1;
@@ -70,7 +69,7 @@ buffer b;
 
 /* ---------------------------- child */
 
-#define DROP "tcpserver: warning: dropping connection, "
+#define DROP "udppserver: warning: dropping connection, "
 
 int flagdeny = 0;
 int flagallownorules = 0;
@@ -144,13 +143,11 @@ void doit(int t)
 
   if (verbosity >= 2) {
     strnum[fmt_ulong(strnum,getpid())] = 0;
-    strerr_warn4("tcpserver: pid ",strnum," from ",remoteipstr,0);
+    strerr_warn4("udpserver: pid ",strnum," from ",remoteipstr,0);
   }
 
   if (flagkillopts)
     socket_ipoptionskill(t);
-  if (!flagdelay)
-    socket_tcpnodelay(t);
 
   if (*banner) {
     buffer_init(&b,write,t,bspace,sizeof bspace);
@@ -182,8 +179,8 @@ void doit(int t)
 	  if (dns_ip4(&tmp,&remotehostsa) == 0)
 	    for (j = 0;j + 4 <= tmp.len;j += 4)
 	      if (byte_equal(remoteip,4,tmp.s + j)) {
-		flagparanoid = 0;
-		break;
+            flagparanoid = 0;
+            break;
 	      }
 	if (!flagparanoid) {
 	  if (!stralloc_0(&remotehostsa)) drop_nomem();
@@ -216,7 +213,7 @@ void doit(int t)
 
   if (verbosity >= 2) {
     strnum[fmt_ulong(strnum,getpid())] = 0;
-    if (!stralloc_copys(&tmp,"tcpserver: ")) drop_nomem();
+    if (!stralloc_copys(&tmp,"udpserver: ")) drop_nomem();
     safecats(flagdeny ? "deny" : "ok");
     cats(" "); safecats(strnum);
     cats(" "); if (localhost) safecats(localhost);
@@ -233,23 +230,20 @@ void doit(int t)
   if (flagdeny) _exit(100);
 }
 
-
-
 /* ---------------------------- parent */
 
-#define FATAL "tcpserver: fatal: "
+#define FATAL "udpserver: fatal: "
 
 void usage(void)
 {
   strerr_warn1("\
-tcpserver: usage: tcpserver \
+udpserver: usage: udpserver \
 [ -1UXpPhHrRoOdDqQv ] \
 [ -c limit ] \
 [ -x rules.cdb ] \
 [ -B banner ] \
 [ -g gid ] \
 [ -u uid ] \
-[ -b backlog ] \
 [ -l localname ] \
 [ -t timeout ] \
 host port program",0);
@@ -260,7 +254,6 @@ unsigned long limit = 40;
 unsigned long numchildren = 0;
 
 int flag1 = 0;
-unsigned long backlog = 20;
 unsigned long uid = 0;
 unsigned long gid = 0;
 
@@ -269,7 +262,7 @@ void printstatus(void)
   if (verbosity < 2) return;
   strnum[fmt_ulong(strnum,numchildren)] = 0;
   strnum2[fmt_ulong(strnum2,limit)] = 0;
-  strerr_warn4("tcpserver: status: ",strnum,"/",strnum2,0);
+  strerr_warn4("udpserver: status: ",strnum,"/",strnum2,0);
 }
 
 void sigterm()
@@ -286,7 +279,7 @@ void sigchld()
     if (verbosity >= 2) {
       strnum[fmt_ulong(strnum,pid)] = 0;
       strnum2[fmt_ulong(strnum2,wstat)] = 0;
-      strerr_warn4("tcpserver: end ",strnum," status ",strnum2,0);
+      strerr_warn4("udpserver: end ",strnum," status ",strnum2,0);
     }
     if (numchildren) --numchildren; printstatus();
   }
@@ -303,15 +296,12 @@ main(int argc,char **argv)
   int s;
   int t;
  
-  while ((opt = getopt(argc,argv,"dDvqQhHrR1UXx:t:u:g:l:b:B:c:pPoO")) != opteof)
+  while ((opt = getopt(argc,argv,"dDvqQhHrR1UXx:t:u:g:l:B:c:pPoO")) != opteof)
     switch(opt) {
-      case 'b': scan_ulong(optarg,&backlog); break;
       case 'c': scan_ulong(optarg,&limit); break;
       case 'X': flagallownorules = 1; break;
       case 'x': fnrules = optarg; break;
       case 'B': banner = optarg; break;
-      case 'd': flagdelay = 1; break;
-      case 'D': flagdelay = 0; break;
       case 'v': verbosity = 2; break;
       case 'q': verbosity = 0; break;
       case 'Q': verbosity = 1; break;
@@ -324,8 +314,10 @@ main(int argc,char **argv)
       case 'R': flagremoteinfo = 0; break;
       case 'r': flagremoteinfo = 1; break;
       case 't': scan_ulong(optarg,&timeout); break;
-      case 'U': x = env_get("UID"); if (x) scan_ulong(x,&uid);
-		x = env_get("GID"); if (x) scan_ulong(x,&gid); break;
+      case 'U': x = env_get("UID"); 
+                if (x) scan_ulong(x,&uid);
+	        	x = env_get("GID"); 
+                if (x) scan_ulong(x,&gid); break;
       case 'u': scan_ulong(optarg,&uid); break;
       case 'g': scan_ulong(optarg,&gid); break;
       case '1': flag1 = 1; break;

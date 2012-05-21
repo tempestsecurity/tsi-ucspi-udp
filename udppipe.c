@@ -30,7 +30,7 @@ int main(int argc, char **argv)
             close(fd[0]);
             if ((fd_move(0,fd[1]) == -1) || (fd_copy(1,0) == -1))
 	            strerr_die2sys(111,"udppipe: ","unable to set up descriptors: ");
-            pathexec(argv); // without +1 it's a fork bomb! :)
+            pathexec(argv);
             strerr_die2sys(111,"udppipe: ","unable to exec: ");
         case -1:
             strerr_die2sys(111,"udppipe: ","unable to fork: ");
