@@ -20,6 +20,8 @@ int main(int argc, char **argv)
                     break;
         } 
     }
+    if (payload_size<256)   payload_size = 256;
+    if (payload_size>65535) payload_size = 65535;
     argv += optind;
     int fd[2], child;
     if (socketpair(AF_UNIX, SOCK_STREAM, 0, fd) < 0)
@@ -52,7 +54,7 @@ int main(int argc, char **argv)
             if (nbytes>0) send(1,buf,nbytes,0);
         }
         if (FD_ISSET(0,&rfd)) {
-            char buf[1500]; // FIXME
+            char buf[payload_size];
             int nbytes = recv(0,buf,sizeof(buf),0);
             if (nbytes>0) write(fd[0],buf,nbytes);
         }

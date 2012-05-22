@@ -136,7 +136,7 @@ warn-auto.sh choose.sh conf-home
 	chmod 755 choose
 
 clean:
-	rm -f *.a *.o udpserver tcprules tcprulescheck recordio tcpclient
+	rm -f *.a *.o udpserver tcprules tcprulescheck recordio udpclient
 	rm -f tcpcat rts udppipe install instcheck auto-str chkshsgr tcpcat
 	rm -f choose compile load makelib fork.h hassgact.h hassgprm.h hasshsgr.h
 	rm -f haswaitp.h iopause.h select.h socket.lib systype uint32.h uint64.h
@@ -398,7 +398,7 @@ pathexec.h
 	./compile pathexec_run.c
 
 prog: \
-udpserver tcprules tcprulescheck recordio tcpclient tcpcat rts udppipe
+udpserver tcprules tcprulescheck recordio udpclient tcpcat rts udppipe
 
 prot.o: \
 compile prot.c hasshsgr.h prot.h
@@ -632,20 +632,6 @@ warn-auto.sh tcpcat.sh conf-home
 	> tcpcat
 	chmod 755 tcpcat
 
-tcpclient: \
-load tcpclient.o remoteinfo.o timeoutconn.o dns.a time.a unix.a \
-byte.a socket.lib
-	./load tcpclient remoteinfo.o timeoutconn.o dns.a time.a \
-	unix.a byte.a  `cat socket.lib`
-
-tcpclient.o: \
-compile tcpclient.c sig.h exit.h sgetopt.h subgetopt.h uint16.h fmt.h \
-scan.h str.h ip4.h uint16.h socket.h uint16.h fd.h stralloc.h \
-gen_alloc.h buffer.h error.h strerr.h pathexec.h timeoutconn.h \
-uint16.h remoteinfo.h stralloc.h uint16.h dns.h stralloc.h iopause.h \
-taia.h tai.h uint64.h taia.h
-	./compile tcpclient.c
-
 tcprules: \
 load tcprules.o cdb.a unix.a byte.a
 	./load tcprules cdb.a unix.a byte.a 
@@ -675,6 +661,20 @@ timeoutconn.o: \
 compile timeoutconn.c ndelay.h socket.h uint16.h iopause.h taia.h \
 tai.h uint64.h error.h timeoutconn.h uint16.h
 	./compile timeoutconn.c
+
+udpclient: \
+load udpclient.o remoteinfo.o timeoutconn.o dns.a time.a unix.a \
+byte.a socket.lib
+	./load udpclient remoteinfo.o timeoutconn.o dns.a time.a \
+	unix.a byte.a  `cat socket.lib`
+
+udpclient.o: \
+compile udpclient.c sig.h exit.h sgetopt.h subgetopt.h uint16.h fmt.h \
+scan.h str.h ip4.h uint16.h socket.h uint16.h fd.h stralloc.h \
+gen_alloc.h buffer.h error.h strerr.h pathexec.h timeoutconn.h \
+uint16.h remoteinfo.h stralloc.h uint16.h dns.h stralloc.h iopause.h \
+taia.h tai.h uint64.h taia.h
+	./compile udpclient.c
 
 udppipe.o: \
 compile udppipe.c pathexec.h
