@@ -392,42 +392,49 @@ main(int argc,char **argv)
     t = recvfrom(s,buf,sizeof(buf),MSG_PEEK,(struct sockaddr *)&sa,&sl);
     sig_block(sig_child);
 
-    if (t == -1) continue;
-    ++numchildren; printstatus();
- 
-    switch(fork()) {
-      case 0:
-        if (gid) if (prot_gid(gid) == -1)
-          strerr_die2sys(111,FATAL,"unable to set gid: ");
-        if (uid) if (prot_uid(uid) == -1)
-          strerr_die2sys(111,FATAL,"unable to set uid: ");
-        if (connect(s,(struct sockaddr *)&sa,sl)<0) 
-          strerr_die2sys(111,FATAL,"unable to connect: ");
-        byte_copy(remoteip,4,(char *)&sa.sin_addr);
-        uint16_unpack_big((char *)&sa.sin_port,&remoteport);
-        
-        ndelay_off(s);
-        doit(s);
-        if ((fd_move(0,s) == -1) || (fd_copy(1,0) == -1))
-	      strerr_die2sys(111,DROP,"unable to set up descriptors: ");
-        sig_uncatch(sig_child);
-        sig_unblock(sig_child);
-        sig_uncatch(sig_term);
-        sig_uncatch(sig_pipe);
-        pathexec(argv);
-        strerr_die4sys(111,DROP,"unable to run ",*argv,": ");
-      case -1:
-        strerr_warn2(DROP,"unable to fork: ",&strerr_sys);
-        --numchildren; printstatus();
+    int ss = socket_udp();
+    if (ss == -1)
+      strerr_die2sys(111,FATAL,"unable to create socket: ");
+    if (socket_bind4_reuse(ss,localip,localport) == -1)
+      strerr_die2sys(111,FATAL,"unable to bind: ");
+    if (socket_local4(ss,localip,&localport) == -1)
+      strerr_die2sys(111,FATAL,"unable to get local address: ");
+    ndelay_off(ss);
+    if (t != -1) {
+        ++numchildren; printstatus();
+     
+        switch(fork()) {
+          case 0:
+            close(ss);
+            if (!t) {
+                t = recvfrom(s,buf,sizeof(buf),0,(struct sockaddr *)&sa,&sl);
+                sendto(s,"",0,0,(struct sockaddr *)&sa,sl);
+            }
+            if (gid) if (prot_gid(gid) == -1)
+              strerr_die2sys(111,FATAL,"unable to set gid: ");
+            if (uid) if (prot_uid(uid) == -1)
+              strerr_die2sys(111,FATAL,"unable to set uid: ");
+            if (connect(s,(struct sockaddr *)&sa,sl)<0) 
+              strerr_die2sys(111,FATAL,"unable to connect: ");
+            byte_copy(remoteip,4,(char *)&sa.sin_addr);
+            uint16_unpack_big((char *)&sa.sin_port,&remoteport);
+            
+            ndelay_off(s);
+            doit(s);
+            if ((fd_move(0,s) == -1) || (fd_copy(1,0) == -1))
+              strerr_die2sys(111,DROP,"unable to set up descriptors: ");
+            sig_uncatch(sig_child);
+            sig_unblock(sig_child);
+            sig_uncatch(sig_term);
+            sig_uncatch(sig_pipe);
+            pathexec(argv);
+            strerr_die4sys(111,DROP,"unable to run ",*argv,": ");
+          case -1:
+            strerr_warn2(DROP,"unable to fork: ",&strerr_sys);
+            --numchildren; printstatus();
+        }
     }
     close(s);
-    s = socket_udp();
-    if (s == -1)
-      strerr_die2sys(111,FATAL,"unable to create socket: ");
-    if (socket_bind4_reuse(s,localip,localport) == -1)
-      strerr_die2sys(111,FATAL,"unable to bind: ");
-    if (socket_local4(s,localip,&localport) == -1)
-      strerr_die2sys(111,FATAL,"unable to get local address: ");
-    ndelay_off(s);
+    s = ss;
   }
 }

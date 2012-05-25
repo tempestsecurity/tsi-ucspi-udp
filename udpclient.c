@@ -43,6 +43,7 @@ host port program");
 int verbosity = 1;
 int flagremoteinfo = 1;
 int flagremotehost = 1;
+int flagfakehandshake = 0;
 unsigned long itimeout = 26;
 unsigned long ctimeout[2] = { 2, 58 };
 
@@ -77,7 +78,7 @@ main(int argc,char **argv)
   
   int fd = 6;
  
-  while ((opt = getopt(argc,argv,"vqQhHrRi:p:t:T:l:1")) != opteof)
+  while ((opt = getopt(argc,argv,"vqQhHrRi:p:t:T:l:1fF")) != opteof)
     switch(opt) {
       case 'v': verbosity = 2; break;
       case 'q': verbosity = 0; break;
@@ -95,6 +96,8 @@ main(int argc,char **argv)
       case 'i': if (!ip4_scan(optarg,iplocal)) usage(); break;
       case 'p': scan_ulong(optarg,&u); portlocal = u; break;
       case '1': fd = 0; break;
+      case 'f': flagfakehandshake = 1; break;
+      case 'F': flagfakehandshake = 0; break;
       default: usage();
     }
   argv += optind;
@@ -146,11 +149,29 @@ main(int argc,char **argv)
       if (socket_bind4(s,iplocal,portlocal) == -1)
         strerr_die2sys(111,FATAL,"unable to bind socket: ");
         socket_connect4(s,addresses.s+j,portremote);
-      //if (timeoutconn(s,addresses.s + j,portremote,ctimeout[cloop]) == 0)
+        if (ctimeout[0] && flagfakehandshake) {
+          send(s,"",0,0);
+          fd_set rfds,efds;
+          FD_ZERO(&rfds);
+          FD_SET(s,&rfds);
+          FD_ZERO(&efds);
+          FD_SET(s,&efds);
+          struct timeval tv;
+          tv.tv_sec  = ctimeout[cloop];
+          tv.tv_usec = 0;
+          select(s+1,&rfds,0,&efds,&tv);
+          if (FD_ISSET(s,&efds)) goto NOT_CONNECTED;
+          char buf[1];
+          struct sockaddr_in sa;
+          socklen_t sl = sizeof(sa);
+          int t = recvfrom(s,buf,sizeof(buf),0,(struct sockaddr *)&sa,&sl);
+          if (t<0) goto NOT_CONNECTED;
+        }
         goto CONNECTED;
+      NOT_CONNECTED: 
       close(s);
       if (!cloop && ctimeout[1] && (errno == error_timeout)) {
-	if (!stralloc_catb(&moreaddresses,addresses.s + j,4)) nomem();
+        if (!stralloc_catb(&moreaddresses,addresses.s + j,4)) nomem();
       }
       else {
         strnum[fmt_ulong(strnum,portremote)] = 0;

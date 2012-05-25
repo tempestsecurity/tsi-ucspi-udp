@@ -22,8 +22,8 @@ int timeoutconn(int s,char ip[4],uint16 port,unsigned int timeout)
       iopause(&x,1,&deadline,&now);
       if (x.revents) break;
       if (taia_less(&deadline,&now)) {
-	errno = error_timeout; /* note that connect attempt is continuing */
-	return -1;
+	    errno = error_timeout; /* note that connect attempt is continuing */
+	    return -1;
       }
     }
     if (!socket_connected(s)) return -1;

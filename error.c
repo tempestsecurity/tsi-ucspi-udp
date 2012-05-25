@@ -114,3 +114,11 @@ EISDIR;
 #else
 -16;
 #endif
+
+int error_connrefused =
+#ifdef ECONNREFUSED 
+ECONNREFUSED;
+#else
+-111;
+#endif
+
