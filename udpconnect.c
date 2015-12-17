@@ -78,7 +78,7 @@ main(int argc,char **argv)
   
   int fd = 6;
  
-  while ((opt = getopt(argc,argv,"vqQhHrRi:p:t:T:l:1fF")) != opteof)
+  while ((opt = getopt(argc,argv,"vqQhHrRi:p:t:T:l:1fFCn:L:8:0:")) != opteof)
     switch(opt) {
       case 'v': verbosity = 2; break;
       case 'q': verbosity = 0; break;
@@ -98,6 +98,11 @@ main(int argc,char **argv)
       case '1': fd = 0; break;
       case 'f': flagfakehandshake = 1; break;
       case 'F': flagfakehandshake = 0; break;
+      case 'C': // Ignore some parameters.
+      case 'n':
+      case 'L':
+      case '8':
+      case '0': break;
       default: usage();
     }
   argv += optind;

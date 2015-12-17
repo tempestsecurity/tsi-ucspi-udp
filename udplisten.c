@@ -296,7 +296,7 @@ main(int argc,char **argv)
   int s;
   int t;
  
-  while ((opt = getopt(argc,argv,"dDvqQhHrR1UXx:t:u:g:l:B:c:pPoO")) != opteof)
+  while ((opt = getopt(argc,argv,"dDvqQhHrR1UXx:t:u:g:l:B:c:pPoOCn:L:8:0:")) != opteof)
     switch(opt) {
       case 'c': scan_ulong(optarg,&limit); break;
       case 'X': flagallownorules = 1; break;
@@ -322,6 +322,11 @@ main(int argc,char **argv)
       case 'g': scan_ulong(optarg,&gid); break;
       case '1': flag1 = 1; break;
       case 'l': localhost = optarg; break;
+      case 'C': // Ignore some parameters.
+      case 'n':
+      case 'L':
+      case '8':
+      case '0': break;
       default: usage();
     }
   argc -= optind;
