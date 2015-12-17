@@ -28,7 +28,7 @@ chmod 755 print
 
 mkdir 50016
 echo '#!/bin/sh
-exec tcpserver \
+exec udplisten \
 -c 2 -Bbanner -vo -D -1 -Xx rules.cdb -Rt5 -hp -l Local -b 2 \
 127.0.0.1 50016 ../print
 ' > 50016/run
@@ -36,83 +36,83 @@ chmod 755 50016/run
 
 supervise 50016 >log 2>&1 &
 
-echo '--- tcpclient prints usage message without enough arguments'
-tcpclient 0 0; echo $?
+echo '--- udpconnect prints usage message without enough arguments'
+udpconnect 0 0; echo $?
 
-echo '--- tcpclient prints error message with unknown port name'
-tcpclient 0 nonexistentport echo wrong; echo $?
+echo '--- udpconnect prints error message with unknown port name'
+udpconnect 0 nonexistentport echo wrong; echo $?
 
-echo '--- tcpclient prints error message when connection fails'
-tcpclient 0 016 echo wrong; echo $?
+echo '--- udpconnect prints error message when connection fails'
+udpconnect 0 016 echo wrong; echo $?
 
-echo '--- tcpclient -q does not print error message when connection fails'
-tcpclient -q 0 016 echo wrong; echo $?
+echo '--- udpconnect -q does not print error message when connection fails'
+udpconnect -q 0 016 echo wrong; echo $?
 
-echo '--- tcpclient understands empty host name as synonym for 0'
-tcpclient '' 016 echo wrong; echo $?
+echo '--- udpconnect understands empty host name as synonym for 0'
+udpconnect '' 016 echo wrong; echo $?
 
-echo '--- tcpclient understands unbracketed IP address'
-tcpclient '127.000.000.001' 016 echo wrong; echo $?
+echo '--- udpconnect understands unbracketed IP address'
+udpconnect '127.000.000.001' 016 echo wrong; echo $?
 
-echo '--- tcpclient understands bracketed IP address'
-tcpclient '[127.000.000.001]' 016 echo wrong; echo $?
+echo '--- udpconnect understands bracketed IP address'
+udpconnect '[127.000.000.001]' 016 echo wrong; echo $?
 
-echo '--- tcpclient prints error message with unknown host name'
-tcpclient nonexistent.local. 016 echo wrong; echo $?
+echo '--- udpconnect prints error message with unknown host name'
+udpconnect nonexistent.local. 016 echo wrong; echo $?
 
-echo '--- tcpclient prints error message with unresolvable host name'
-tcpclient thislabelistoolongbecausednshasalimitof63charactersinasinglelabel. 016 echo wrong; echo $?
+echo '--- udpconnect prints error message with unresolvable host name'
+udpconnect thislabelistoolongbecausednshasalimitof63charactersinasinglelabel. 016 echo wrong; echo $?
 
-echo '--- tcpserver prints usage message without enough arguments'
-tcpserver 0 0; echo $?
+echo '--- udplisten prints usage message without enough arguments'
+udplisten 0 0; echo $?
 
-echo '--- tcpserver -u 1 attempts to set uid to 1'
-tcpserver -u 1 0 0 echo wrong; echo $?
+echo '--- udplisten -u 1 attempts to set uid to 1'
+udplisten -u 1 0 0 echo wrong; echo $?
 
-echo '--- tcpserver -U reads $UID'
-env UID=1 tcpserver -U 0 0 echo wrong; echo $?
+echo '--- udplisten -U reads $UID'
+env UID=1 udplisten -U 0 0 echo wrong; echo $?
 
-echo '--- tcpserver -g 2 attempts to set gid to 2'
-tcpserver -g 2 0 0 echo wrong; echo $?
+echo '--- udplisten -g 2 attempts to set gid to 2'
+udplisten -g 2 0 0 echo wrong; echo $?
 
-echo '--- tcpserver -U reads $GID'
-env GID=2 tcpserver -U 0 0 echo wrong; echo $?
+echo '--- udplisten -U reads $GID'
+env GID=2 udplisten -U 0 0 echo wrong; echo $?
 
-echo '--- tcpserver prints error message with unknown port name'
-tcpserver 0 nonexistentport echo wrong; echo $?
+echo '--- udplisten prints error message with unknown port name'
+udplisten 0 nonexistentport echo wrong; echo $?
 
-echo '--- tcpserver prints error message with unknown host name'
-tcpserver nonexistent.local. 016 echo wrong; echo $?
+echo '--- udplisten prints error message with unknown host name'
+udplisten nonexistent.local. 016 echo wrong; echo $?
 
-echo '--- tcpserver prints error message with unresolvable host name'
-tcpserver thislabelistoolongbecausednshasalimitof63charactersinasinglelabel. 016 echo wrong; echo $?
+echo '--- udplisten prints error message with unresolvable host name'
+udplisten thislabelistoolongbecausednshasalimitof63charactersinasinglelabel. 016 echo wrong; echo $?
 
-echo '--- tcpserver prints error message with non-local host name'
-tcpserver 1.2.3.4 016 echo wrong; echo $?
+echo '--- udplisten prints error message with non-local host name'
+udplisten 1.2.3.4 016 echo wrong; echo $?
 
-echo '--- tcpserver sets basic environment variables' 
-tcpclient -p 50017 -R -H -T 10 -l Local 0 50016 sh -c 'cat <&6'
+echo '--- udplisten sets basic environment variables' 
+udpconnect -p 50017 -R -H -T 10 -l Local 0 50016 sh -c 'cat <&6'
 echo $?
 
-echo '--- tcpclient recognizes -D, -i, -r, -h, -t'
-tcpclient -Di 127.0.0.1 -p 50018 -hrt1 -l Local \
+echo '--- udpconnect recognizes -D, -i, -r, -h, -t'
+udpconnect -Di 127.0.0.1 -p 50018 -hrt1 -l Local \
 127.0.0.1 50016 sh -c 'cat <&6'
 echo $?
 
-echo '--- tcpclient sets basic environment variables' 
-tcpclient -p 50019 -R -H -l Local 0 50016 ./print
+echo '--- udpconnect sets basic environment variables' 
+udpconnect -p 50019 -R -H -l Local 0 50016 ./print
 echo $?
 
-echo '--- tcpclient looks up host names properly'
-tcpclient -p 50020 -R 0 50016 ./print
+echo '--- udpconnect looks up host names properly'
+udpconnect -p 50020 -R 0 50016 ./print
 echo $?
 
-echo '--- tcpclient -v works' 
-tcpclient -v -R -H -l Local 0 50016 echo ok
+echo '--- udpconnect -v works' 
+udpconnect -v -R -H -l Local 0 50016 echo ok
 echo $?
 
-echo '--- tcpserver prints error message with used port'
-tcpserver -R -H -l Local 127.0.0.1 50016 echo wrong
+echo '--- udplisten prints error message with used port'
+udplisten -R -H -l Local 127.0.0.1 50016 echo wrong
 echo $?
 
 echo '--- tcpcat works'
@@ -340,7 +340,7 @@ echo '--- rblsmtpd understands -a'
 svc -dx 50016
 wait
 
-echo '--- tcpserver -1v prints proper messages'
+echo '--- udplisten -1v prints proper messages'
 sed -e 's/::.*/::x/' -e 's/ [0-9]* / x /' < log
 
 

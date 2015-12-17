@@ -133,8 +133,8 @@ taia_pack.o
 taia_sub.o
 taia_uint.o
 tcpcat
-tcpclient
-tcpclient.o
+udpconnect
+udpconnect.o
 tcprules
 tcprules.o
 tcprulescheck

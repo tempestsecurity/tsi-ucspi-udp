@@ -173,7 +173,7 @@ taia_pack.c
 taia_sub.c
 taia_uint.c
 tcpcat.sh
-tcpclient.c
+udpconnect.c
 tcprules.c
 tcprulescheck.c
 timeoutconn.c
