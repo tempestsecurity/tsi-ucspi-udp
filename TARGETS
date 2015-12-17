@@ -143,8 +143,8 @@ time.a
 timeoutconn.o
 udppipe.o
 udppipe
-udpserver
-udpserver.o
+udplisten
+udplisten.o
 uint16_pack.o
 uint16_unpack.o
 uint32.h

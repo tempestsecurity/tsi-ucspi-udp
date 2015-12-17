@@ -21,8 +21,8 @@
 #include "remoteinfo.h"
 #include "dns.h"
 
-#define FATAL "udpclient: fatal: "
-#define CONNECT "udpclient: unable to connect to "
+#define FATAL "udpconnect: fatal: "
+#define CONNECT "udpconnect: unable to connect to "
 
 void nomem(void)
 {
@@ -30,7 +30,7 @@ void nomem(void)
 }
 void usage(void)
 {
-  strerr_die1x(100,"udpclient: usage: udpclient \
+  strerr_die1x(100,"udpconnect: usage: udpconnect \
 [ -hHrRdDqQv ] \
 [ -i localip ] \
 [ -p localport ] \
@@ -214,7 +214,7 @@ main(int argc,char **argv)
   ipstr[ip4_fmt(ipstr,ipremote)] = 0;
   if (!pathexec_env("TCPREMOTEIP",ipstr)) nomem();
   if (verbosity >= 2)
-    strerr_warn4("udpclient: connected to ",ipstr," port ",strnum,0);
+    strerr_warn4("udpconnect: connected to ",ipstr," port ",strnum,0);
 
   x = 0;
   if (flagremotehost)

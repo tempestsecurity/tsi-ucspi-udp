@@ -136,7 +136,7 @@ warn-auto.sh choose.sh conf-home
 	chmod 755 choose
 
 clean:
-	rm -f *.a *.o udpserver tcprules tcprulescheck recordio udpclient
+	rm -f *.a *.o udplisten tcprules tcprulescheck recordio udpconnect
 	rm -f tcpcat rts udppipe install instcheck auto-str chkshsgr tcpcat
 	rm -f choose compile load makelib fork.h hassgact.h hassgprm.h hasshsgr.h
 	rm -f haswaitp.h iopause.h select.h socket.lib systype uint32.h uint64.h
@@ -398,7 +398,7 @@ pathexec.h
 	./compile pathexec_run.c
 
 prog: \
-udpserver tcprules tcprulescheck recordio udpclient tcpcat rts udppipe
+udplisten tcprules tcprulescheck recordio udpconnect tcpcat rts udppipe
 
 prot.o: \
 compile prot.c hasshsgr.h prot.h
@@ -662,19 +662,19 @@ compile timeoutconn.c ndelay.h socket.h uint16.h iopause.h taia.h \
 tai.h uint64.h error.h timeoutconn.h uint16.h
 	./compile timeoutconn.c
 
-udpclient: \
-load udpclient.o remoteinfo.o timeoutconn.o dns.a time.a unix.a \
+udpconnect: \
+load udpconnect.o remoteinfo.o timeoutconn.o dns.a time.a unix.a \
 byte.a socket.lib
-	./load udpclient remoteinfo.o timeoutconn.o dns.a time.a \
+	./load udpconnect remoteinfo.o timeoutconn.o dns.a time.a \
 	unix.a byte.a  `cat socket.lib`
 
-udpclient.o: \
-compile udpclient.c sig.h exit.h sgetopt.h subgetopt.h uint16.h fmt.h \
+udpconnect.o: \
+compile udpconnect.c sig.h exit.h sgetopt.h subgetopt.h uint16.h fmt.h \
 scan.h str.h ip4.h uint16.h socket.h uint16.h fd.h stralloc.h \
 gen_alloc.h buffer.h error.h strerr.h pathexec.h timeoutconn.h \
 uint16.h remoteinfo.h stralloc.h uint16.h dns.h stralloc.h iopause.h \
 taia.h tai.h uint64.h taia.h
-	./compile udpclient.c
+	./compile udpconnect.c
 
 udppipe.o: \
 compile udppipe.c pathexec.h
@@ -684,20 +684,20 @@ udppipe: \
 load udppipe.o unix.a byte.a socket.lib
 	./load udppipe unix.a byte.a `cat socket.lib`
 
-udpserver: \
-load udpserver.o rules.o remoteinfo.o timeoutconn.o cdb.a dns.a \
+udplisten: \
+load udplisten.o rules.o remoteinfo.o timeoutconn.o cdb.a dns.a \
 time.a unix.a byte.a socket.lib
-	./load udpserver rules.o remoteinfo.o timeoutconn.o cdb.a \
+	./load udplisten rules.o remoteinfo.o timeoutconn.o cdb.a \
 	dns.a time.a unix.a byte.a  `cat socket.lib`
 
-udpserver.o: \
-compile udpserver.c uint16.h str.h byte.h fmt.h scan.h ip4.h fd.h \
+udplisten.o: \
+compile udplisten.c uint16.h str.h byte.h fmt.h scan.h ip4.h fd.h \
 exit.h env.h prot.h open.h wait.h readwrite.h stralloc.h gen_alloc.h \
 alloc.h buffer.h error.h strerr.h sgetopt.h subgetopt.h pathexec.h \
 socket.h uint16.h ndelay.h remoteinfo.h stralloc.h uint16.h rules.h \
 stralloc.h sig.h dns.h stralloc.h iopause.h taia.h tai.h uint64.h \
 taia.h
-	./compile udpserver.c
+	./compile udplisten.c
 
 uint16_pack.o: \
 compile uint16_pack.c uint16.h

@@ -143,7 +143,7 @@ void doit(int t)
 
   if (verbosity >= 2) {
     strnum[fmt_ulong(strnum,getpid())] = 0;
-    strerr_warn4("udpserver: pid ",strnum," from ",remoteipstr,0);
+    strerr_warn4("udplisten: pid ",strnum," from ",remoteipstr,0);
   }
 
   if (flagkillopts)
@@ -213,7 +213,7 @@ void doit(int t)
 
   if (verbosity >= 2) {
     strnum[fmt_ulong(strnum,getpid())] = 0;
-    if (!stralloc_copys(&tmp,"udpserver: ")) drop_nomem();
+    if (!stralloc_copys(&tmp,"udplisten: ")) drop_nomem();
     safecats(flagdeny ? "deny" : "ok");
     cats(" "); safecats(strnum);
     cats(" "); if (localhost) safecats(localhost);
@@ -232,12 +232,12 @@ void doit(int t)
 
 /* ---------------------------- parent */
 
-#define FATAL "udpserver: fatal: "
+#define FATAL "udplisten: fatal: "
 
 void usage(void)
 {
   strerr_warn1("\
-udpserver: usage: udpserver \
+udplisten: usage: udplisten \
 [ -1UXpPhHrRoOdDqQv ] \
 [ -c limit ] \
 [ -x rules.cdb ] \
@@ -262,7 +262,7 @@ void printstatus(void)
   if (verbosity < 2) return;
   strnum[fmt_ulong(strnum,numchildren)] = 0;
   strnum2[fmt_ulong(strnum2,limit)] = 0;
-  strerr_warn4("udpserver: status: ",strnum,"/",strnum2,0);
+  strerr_warn4("udplisten: status: ",strnum,"/",strnum2,0);
 }
 
 void sigterm()
@@ -279,7 +279,7 @@ void sigchld()
     if (verbosity >= 2) {
       strnum[fmt_ulong(strnum,pid)] = 0;
       strnum2[fmt_ulong(strnum2,wstat)] = 0;
-      strerr_warn4("udpserver: end ",strnum," status ",strnum2,0);
+      strerr_warn4("udplisten: end ",strnum," status ",strnum2,0);
     }
     if (numchildren) --numchildren; printstatus();
   }
