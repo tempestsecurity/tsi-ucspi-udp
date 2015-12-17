@@ -115,76 +115,76 @@ echo '--- udplisten prints error message with used port'
 udplisten -R -H -l Local 127.0.0.1 50016 echo wrong
 echo $?
 
-echo '--- tcpcat works'
-tcpcat 0 50016 | grep -v TCPREMOTEPORT
+echo '--- udpcat works'
+udpcat 0 50016 | grep -v TCPREMOTEPORT
 echo $?
 
 echo '--- mconnect works'
 mconnect 0 50016 </dev/null | grep -v TCPREMOTEPORT
 echo $?
 
-echo '--- tcprules prints usage message without enough arguments'
-tcprules test.cdb; echo $?
+echo '--- udprules prints usage message without enough arguments'
+udprules test.cdb; echo $?
 
-echo '--- tcprules prints error message if it cannot create tmp'
-echo 1.2.3.4:deny | tcprules test.cdb /dev/nonexistent/tmp; echo $?
+echo '--- udprules prints error message if it cannot create tmp'
+echo 1.2.3.4:deny | udprules test.cdb /dev/nonexistent/tmp; echo $?
 
-echo '--- tcprules prints error message if it cannot move tmp to cdb'
-echo 1.2.3.4:deny | tcprules /dev/nonexistent/cdb test.tmp; echo $?
+echo '--- udprules prints error message if it cannot move tmp to cdb'
+echo 1.2.3.4:deny | udprules /dev/nonexistent/cdb test.tmp; echo $?
 
-echo '--- tcprules creates a cdb file'
-echo 1.2.3.4:deny | tcprules test.cdb test.tmp; echo $?
+echo '--- udprules creates a cdb file'
+echo 1.2.3.4:deny | udprules test.cdb test.tmp; echo $?
 
-echo '--- tcprulescheck sees deny'
-env TCPREMOTEIP=1.2.3.4 tcprulescheck test.cdb; echo $?
+echo '--- udprulescheck sees deny'
+env TCPREMOTEIP=1.2.3.4 udprulescheck test.cdb; echo $?
 
-echo '--- tcprulescheck does not apply deny to another host'
-env TCPREMOTEIP=1.2.3.5 tcprulescheck test.cdb; echo $?
+echo '--- udprulescheck does not apply deny to another host'
+env TCPREMOTEIP=1.2.3.5 udprulescheck test.cdb; echo $?
 
-echo '--- tcprules replaces a cdb file'
+echo '--- udprules replaces a cdb file'
 echo 'joe@127.0.0.1:allow,which=/first/
 18.23.0.32:allow,which="second"
 127.:allow,which=+third+
-:allow,which==fourth=' | tcprules test.cdb test.tmp; echo $?
+:allow,which==fourth=' | udprules test.cdb test.tmp; echo $?
 
-echo '--- tcprulescheck finds rule with address and info'
-env TCPREMOTEIP=127.0.0.1 TCPREMOTEINFO=joe tcprulescheck test.cdb; echo $?
+echo '--- udprulescheck finds rule with address and info'
+env TCPREMOTEIP=127.0.0.1 TCPREMOTEINFO=joe udprulescheck test.cdb; echo $?
 
-echo '--- tcprulescheck finds rule with address'
-env TCPREMOTEIP=18.23.0.32 TCPREMOTEINFO=joe tcprulescheck test.cdb; echo $?
+echo '--- udprulescheck finds rule with address'
+env TCPREMOTEIP=18.23.0.32 TCPREMOTEINFO=joe udprulescheck test.cdb; echo $?
 
-echo '--- tcprulescheck finds one-dot wildcard'
-env TCPREMOTEIP=127.0.0.1 TCPREMOTEINFO=bill tcprulescheck test.cdb; echo $?
+echo '--- udprulescheck finds one-dot wildcard'
+env TCPREMOTEIP=127.0.0.1 TCPREMOTEINFO=bill udprulescheck test.cdb; echo $?
 
-echo '--- tcprulescheck finds zero-dot wildcard'
-env TCPREMOTEIP=10.119.75.39 TCPREMOTEINFO=bill tcprulescheck test.cdb; echo $?
+echo '--- udprulescheck finds zero-dot wildcard'
+env TCPREMOTEIP=10.119.75.39 TCPREMOTEINFO=bill udprulescheck test.cdb; echo $?
 
-echo '--- tcprules handles comments, address ranges, multiple variables'
+echo '--- udprules handles comments, address ranges, multiple variables'
 echo '127.0-5.:allow,which=/first/,where=/whatever/
-# comment' | tcprules test.cdb test.tmp; echo $?
-env TCPREMOTEIP=127.0.0.1 tcprulescheck test.cdb
-env TCPREMOTEIP=127.1.0.1 tcprulescheck test.cdb
-env TCPREMOTEIP=127.2.0.1 tcprulescheck test.cdb
-env TCPREMOTEIP=127.3.0.1 tcprulescheck test.cdb
-env TCPREMOTEIP=127.4.0.1 tcprulescheck test.cdb
-env TCPREMOTEIP=127.5.0.1 tcprulescheck test.cdb
-env TCPREMOTEIP=127.6.0.1 tcprulescheck test.cdb
-env TCPREMOTEIP=127.7.0.1 tcprulescheck test.cdb
-env TCPREMOTEIP=127.8.0.1 tcprulescheck test.cdb
-env TCPREMOTEIP=127.9.0.1 tcprulescheck test.cdb
-env TCPREMOTEIP=127.10.0.1 tcprulescheck test.cdb
+# comment' | udprules test.cdb test.tmp; echo $?
+env TCPREMOTEIP=127.0.0.1 udprulescheck test.cdb
+env TCPREMOTEIP=127.1.0.1 udprulescheck test.cdb
+env TCPREMOTEIP=127.2.0.1 udprulescheck test.cdb
+env TCPREMOTEIP=127.3.0.1 udprulescheck test.cdb
+env TCPREMOTEIP=127.4.0.1 udprulescheck test.cdb
+env TCPREMOTEIP=127.5.0.1 udprulescheck test.cdb
+env TCPREMOTEIP=127.6.0.1 udprulescheck test.cdb
+env TCPREMOTEIP=127.7.0.1 udprulescheck test.cdb
+env TCPREMOTEIP=127.8.0.1 udprulescheck test.cdb
+env TCPREMOTEIP=127.9.0.1 udprulescheck test.cdb
+env TCPREMOTEIP=127.10.0.1 udprulescheck test.cdb
 
-echo '--- tcprules handles host names'
+echo '--- udprules handles host names'
 echo '=known.edu:allow,which=/known/
 =.abuser.edu:deny
-:allow,which=/anybody/' | tcprules test.cdb test.tmp; echo $?
-env TCPREMOTEIP=1.2.3.4 TCPREMOTEHOST=known.edu tcprulescheck test.cdb
-env TCPREMOTEIP=1.2.3.4 TCPREMOTEHOST=random.edu tcprulescheck test.cdb
-env TCPREMOTEIP=1.2.3.4 TCPREMOTEHOST=abuser.edu tcprulescheck test.cdb
-env TCPREMOTEIP=1.2.3.4 TCPREMOTEHOST=x.abuser.edu tcprulescheck test.cdb
-env TCPREMOTEIP=1.2.3.4 TCPREMOTEHOST=x.y.abuser.edu tcprulescheck test.cdb
+:allow,which=/anybody/' | udprules test.cdb test.tmp; echo $?
+env TCPREMOTEIP=1.2.3.4 TCPREMOTEHOST=known.edu udprulescheck test.cdb
+env TCPREMOTEIP=1.2.3.4 TCPREMOTEHOST=random.edu udprulescheck test.cdb
+env TCPREMOTEIP=1.2.3.4 TCPREMOTEHOST=abuser.edu udprulescheck test.cdb
+env TCPREMOTEIP=1.2.3.4 TCPREMOTEHOST=x.abuser.edu udprulescheck test.cdb
+env TCPREMOTEIP=1.2.3.4 TCPREMOTEHOST=x.y.abuser.edu udprulescheck test.cdb
 
-echo '--- tcprulescheck searches for rules in the proper order'
+echo '--- udprulescheck searches for rules in the proper order'
 echo 'xyz@86.75.30.9:allow,which=/first/
 xyz@=one.two.three:allow,which=/second/
 86.75.30.9:allow,which=/third/
@@ -196,34 +196,34 @@ xyz@=one.two.three:allow,which=/second/
 =.three:allow,which=/ninth/
 =:allow,which=/tenth/
 :allow,which=/eleventh/
-' | tcprules test.cdb test.tmp; echo $?
-env TCPREMOTEIP=86.75.30.9 TCPREMOTEHOST=one.two.three TCPREMOTEINFO=xyz tcprulescheck test.cdb
-env TCPREMOTEIP=86.75.30.9 TCPREMOTEINFO=xyz tcprulescheck test.cdb
-env TCPREMOTEIP=86.75.30.10 TCPREMOTEHOST=one.two.three TCPREMOTEINFO=xyz tcprulescheck test.cdb
-env TCPREMOTEIP=86.75.30.9 TCPREMOTEHOST=one.two.three TCPREMOTEINFO=abc tcprulescheck test.cdb
-env TCPREMOTEIP=86.75.30.9 TCPREMOTEINFO=abc tcprulescheck test.cdb
-env TCPREMOTEIP=86.75.30.9 TCPREMOTEHOST=one.two.three tcprulescheck test.cdb
-env TCPREMOTEIP=86.75.30.9 tcprulescheck test.cdb
-env TCPREMOTEIP=86.75.30.10 TCPREMOTEHOST=one.two.three TCPREMOTEINFO=abc tcprulescheck test.cdb
-env TCPREMOTEIP=86.75.30.10 TCPREMOTEHOST=one.two.three tcprulescheck test.cdb
-env TCPREMOTEIP=86.75.30.10 TCPREMOTEHOST=four.two.three tcprulescheck test.cdb
-env TCPREMOTEIP=86.75.30.10 tcprulescheck test.cdb
-env TCPREMOTEIP=86.75.20.10 TCPREMOTEHOST=four.two.three TCPREMOTEINFO=abc tcprulescheck test.cdb
-env TCPREMOTEIP=86.75.20.10 TCPREMOTEINFO=abc tcprulescheck test.cdb
-env TCPREMOTEIP=86.75.20.10 TCPREMOTEHOST=four.two.three tcprulescheck test.cdb
-env TCPREMOTEIP=86.75.20.10 tcprulescheck test.cdb
-env TCPREMOTEIP=86.85.20.10 TCPREMOTEHOST=four.two.three TCPREMOTEINFO=abc tcprulescheck test.cdb
-env TCPREMOTEIP=86.85.20.10 TCPREMOTEINFO=abc tcprulescheck test.cdb
-env TCPREMOTEIP=86.85.20.10 TCPREMOTEHOST=four.two.three tcprulescheck test.cdb
-env TCPREMOTEIP=86.85.20.10 tcprulescheck test.cdb
-env TCPREMOTEIP=96.85.20.10 TCPREMOTEHOST=four.two.three TCPREMOTEINFO=abc tcprulescheck test.cdb
-env TCPREMOTEIP=96.85.20.10 TCPREMOTEHOST=four.two.three tcprulescheck test.cdb
-env TCPREMOTEIP=96.85.20.10 TCPREMOTEHOST=four.three TCPREMOTEINFO=abc tcprulescheck test.cdb
-env TCPREMOTEIP=96.85.20.10 TCPREMOTEHOST=four.three tcprulescheck test.cdb
-env TCPREMOTEIP=96.85.20.10 TCPREMOTEHOST=four TCPREMOTEINFO=abc tcprulescheck test.cdb
-env TCPREMOTEIP=96.85.20.10 TCPREMOTEHOST=four tcprulescheck test.cdb
-env TCPREMOTEIP=96.85.20.10 TCPREMOTEINFO=abc tcprulescheck test.cdb
-env TCPREMOTEIP=96.85.20.10 tcprulescheck test.cdb
+' | udprules test.cdb test.tmp; echo $?
+env TCPREMOTEIP=86.75.30.9 TCPREMOTEHOST=one.two.three TCPREMOTEINFO=xyz udprulescheck test.cdb
+env TCPREMOTEIP=86.75.30.9 TCPREMOTEINFO=xyz udprulescheck test.cdb
+env TCPREMOTEIP=86.75.30.10 TCPREMOTEHOST=one.two.three TCPREMOTEINFO=xyz udprulescheck test.cdb
+env TCPREMOTEIP=86.75.30.9 TCPREMOTEHOST=one.two.three TCPREMOTEINFO=abc udprulescheck test.cdb
+env TCPREMOTEIP=86.75.30.9 TCPREMOTEINFO=abc udprulescheck test.cdb
+env TCPREMOTEIP=86.75.30.9 TCPREMOTEHOST=one.two.three udprulescheck test.cdb
+env TCPREMOTEIP=86.75.30.9 udprulescheck test.cdb
+env TCPREMOTEIP=86.75.30.10 TCPREMOTEHOST=one.two.three TCPREMOTEINFO=abc udprulescheck test.cdb
+env TCPREMOTEIP=86.75.30.10 TCPREMOTEHOST=one.two.three udprulescheck test.cdb
+env TCPREMOTEIP=86.75.30.10 TCPREMOTEHOST=four.two.three udprulescheck test.cdb
+env TCPREMOTEIP=86.75.30.10 udprulescheck test.cdb
+env TCPREMOTEIP=86.75.20.10 TCPREMOTEHOST=four.two.three TCPREMOTEINFO=abc udprulescheck test.cdb
+env TCPREMOTEIP=86.75.20.10 TCPREMOTEINFO=abc udprulescheck test.cdb
+env TCPREMOTEIP=86.75.20.10 TCPREMOTEHOST=four.two.three udprulescheck test.cdb
+env TCPREMOTEIP=86.75.20.10 udprulescheck test.cdb
+env TCPREMOTEIP=86.85.20.10 TCPREMOTEHOST=four.two.three TCPREMOTEINFO=abc udprulescheck test.cdb
+env TCPREMOTEIP=86.85.20.10 TCPREMOTEINFO=abc udprulescheck test.cdb
+env TCPREMOTEIP=86.85.20.10 TCPREMOTEHOST=four.two.three udprulescheck test.cdb
+env TCPREMOTEIP=86.85.20.10 udprulescheck test.cdb
+env TCPREMOTEIP=96.85.20.10 TCPREMOTEHOST=four.two.three TCPREMOTEINFO=abc udprulescheck test.cdb
+env TCPREMOTEIP=96.85.20.10 TCPREMOTEHOST=four.two.three udprulescheck test.cdb
+env TCPREMOTEIP=96.85.20.10 TCPREMOTEHOST=four.three TCPREMOTEINFO=abc udprulescheck test.cdb
+env TCPREMOTEIP=96.85.20.10 TCPREMOTEHOST=four.three udprulescheck test.cdb
+env TCPREMOTEIP=96.85.20.10 TCPREMOTEHOST=four TCPREMOTEINFO=abc udprulescheck test.cdb
+env TCPREMOTEIP=96.85.20.10 TCPREMOTEHOST=four udprulescheck test.cdb
+env TCPREMOTEIP=96.85.20.10 TCPREMOTEINFO=abc udprulescheck test.cdb
+env TCPREMOTEIP=96.85.20.10 udprulescheck test.cdb
 
 
 echo '--- addcr leaves an empty file alone'

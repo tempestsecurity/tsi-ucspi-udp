@@ -41,7 +41,7 @@ main(int argc,char **argv)
 
   fnrules = argv[1];
   if (!fnrules)
-    strerr_die1x(100,"tcprulescheck: usage: tcprulescheck rules.cdb");
+    strerr_die1x(100,"udprulescheck: usage: udprulescheck rules.cdb");
 
   ip = env_get("TCPREMOTEIP");
   if (!ip) ip = "0.0.0.0";
@@ -50,7 +50,7 @@ main(int argc,char **argv)
 
   fd = open_read(fnrules);
   if ((fd == -1) || (rules(found,fd,ip,host,info) == -1))
-    strerr_die3sys(111,"tcprulescheck: fatal: unable to read ",fnrules,": ");
+    strerr_die3sys(111,"udprulescheck: fatal: unable to read ",fnrules,": ");
 
   buffer_putsflush(buffer_1,"default:\nallow connection\n");
   _exit(0);

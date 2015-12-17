@@ -7,7 +7,7 @@
 #include "byte.h"
 #include "cdb_make.h"
 
-#define FATAL "tcprules: fatal: "
+#define FATAL "udprules: fatal: "
 
 unsigned long linenum = 0;
 char *fntemp;
@@ -28,7 +28,7 @@ void nomem(void)
 }
 void usage(void)
 {
-  strerr_die1x(100,"tcprules: usage: tcprules rules.cdb rules.tmp");
+  strerr_die1x(100,"udprules: usage: udprules rules.cdb rules.tmp");
 }
 void die_bad(void)
 {

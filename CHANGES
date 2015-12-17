@@ -24,7 +24,7 @@
 	code: udpconnect now interprets empty host name as 0.
 	doc: added addcr.0, delcr.0.
 	doc: added who@.0, date@.0, finger@.0.
-	doc: added tcpcat.0, mconnect.0.
+	doc: added udpcat.0, mconnect.0.
 	code: added printstatus() in udplisten.
 	code: eliminated numchildren in printpid() in udplisten.
 	code: unblocked SIGCHLD after setting SIGCHLD to SIG_DFL in
@@ -58,8 +58,8 @@
 	code: rewrote recordio for instant output and other features.
 	doc: added references in udplisten.0 and udpconnect.0.
 	code: added udpconnect -i option.
-	code: added tcprulescheck.
-	code: added some tcprules regression tests.
+	code: added udprulescheck.
+	code: added some udprules regression tests.
 19981111
 	code: avoided ndelay in recordio.
 	version: ucspi-tcp 0.84, beta.
@@ -67,7 +67,7 @@
 	doc: improved description of host 0 in udplisten.0. tnx to
 		several people.
 19981218
-	doc: reordered sample rules in tcprules.0.
+	doc: reordered sample rules in udprules.0.
 		tnx Harald Hanche-Olsen.
 20000120
 	internal: revamped packaging.
@@ -127,7 +127,7 @@
 	ui: switched to prot; so setgid() is preceded by setgroups().
 	ui: udplisten supports -U.
 	ui: udplisten supports hostname rules.
-	ui: tcprulescheck now uses environment variables.
+	ui: udprulescheck now uses environment variables.
 20000312
 	version: ucspi-tcp 0.86, beta.
 20000314
@@ -138,7 +138,7 @@
 20000315
 	version: ucspi-tcp 0.87, beta.
 20000318
-	internal: split rules() out of udplisten and tcprulescheck.
+	internal: split rules() out of udplisten and udprulescheck.
 	bug: didn't always clear rule length when $TCPREMOTEHOST was
 		set. impact: empty rule could be ignored. fix: obvious.
 		tnx Toshinori Maeno, Takashi Takizawa, Yuichi Katoh.

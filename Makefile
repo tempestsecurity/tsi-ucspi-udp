@@ -136,8 +136,8 @@ warn-auto.sh choose.sh conf-home
 	chmod 755 choose
 
 clean:
-	rm -f *.a *.o udplisten tcprules tcprulescheck recordio udpconnect
-	rm -f tcpcat rts udppipe install instcheck auto-str chkshsgr tcpcat
+	rm -f *.a *.o udplisten udprules udprulescheck recordio udpconnect
+	rm -f udpcat rts udppipe install instcheck auto-str chkshsgr udpcat
 	rm -f choose compile load makelib fork.h hassgact.h hassgprm.h hasshsgr.h
 	rm -f haswaitp.h iopause.h select.h socket.lib systype uint32.h uint64.h
 	rm -f auto_home.c
@@ -398,7 +398,7 @@ pathexec.h
 	./compile pathexec_run.c
 
 prog: \
-udplisten tcprules tcprulescheck recordio udpconnect tcpcat rts udppipe
+udplisten udprules udprulescheck recordio udpconnect udpcat rts udppipe
 
 prot.o: \
 compile prot.c hasshsgr.h prot.h
@@ -625,30 +625,30 @@ taia_uint.o: \
 compile taia_uint.c taia.h tai.h uint64.h
 	./compile taia_uint.c
 
-tcpcat: \
-warn-auto.sh tcpcat.sh conf-home
-	cat warn-auto.sh tcpcat.sh \
+udpcat: \
+warn-auto.sh udpcat.sh conf-home
+	cat warn-auto.sh udpcat.sh \
 	| sed s}HOME}"`head -1 conf-home`"}g \
-	> tcpcat
-	chmod 755 tcpcat
+	> udpcat
+	chmod 755 udpcat
 
-tcprules: \
-load tcprules.o cdb.a unix.a byte.a
-	./load tcprules cdb.a unix.a byte.a 
+udprules: \
+load udprules.o cdb.a unix.a byte.a
+	./load udprules cdb.a unix.a byte.a 
 
-tcprules.o: \
-compile tcprules.c strerr.h stralloc.h gen_alloc.h getln.h buffer.h \
+udprules.o: \
+compile udprules.c strerr.h stralloc.h gen_alloc.h getln.h buffer.h \
 stralloc.h buffer.h exit.h fmt.h byte.h cdb_make.h buffer.h uint32.h
-	./compile tcprules.c
+	./compile udprules.c
 
-tcprulescheck: \
-load tcprulescheck.o rules.o cdb.a unix.a byte.a
-	./load tcprulescheck rules.o cdb.a unix.a byte.a 
+udprulescheck: \
+load udprulescheck.o rules.o cdb.a unix.a byte.a
+	./load udprulescheck rules.o cdb.a unix.a byte.a 
 
-tcprulescheck.o: \
-compile tcprulescheck.c byte.h buffer.h strerr.h env.h rules.h \
+udprulescheck.o: \
+compile udprulescheck.c byte.h buffer.h strerr.h env.h rules.h \
 stralloc.h gen_alloc.h
-	./compile tcprulescheck.c
+	./compile udprulescheck.c
 
 time.a: \
 makelib iopause.o tai_pack.o taia_add.o taia_approx.o taia_frac.o \

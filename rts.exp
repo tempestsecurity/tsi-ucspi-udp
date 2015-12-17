@@ -98,7 +98,7 @@ ok
 --- udplisten prints error message with used port
 udplisten: fatal: unable to bind: address already used
 111
---- tcpcat works
+--- udpcat works
 bannerPROTO=TCP
 TCPLOCALHOST=Local
 TCPLOCALIP=127.0.0.1
@@ -116,48 +116,48 @@ TCPREMOTEHOST=localhost
 TCPREMOTEIP=127.0.0.1
 TCPREMOTEINFO=unset
 0
---- tcprules prints usage message without enough arguments
-tcprules: usage: tcprules rules.cdb rules.tmp
+--- udprules prints usage message without enough arguments
+udprules: usage: udprules rules.cdb rules.tmp
 100
---- tcprules prints error message if it cannot create tmp
-tcprules: fatal: unable to create /dev/nonexistent/tmp: file does not exist
+--- udprules prints error message if it cannot create tmp
+udprules: fatal: unable to create /dev/nonexistent/tmp: file does not exist
 111
---- tcprules prints error message if it cannot move tmp to cdb
-tcprules: fatal: unable to move test.tmp to /dev/nonexistent/cdb: file does not exist
+--- udprules prints error message if it cannot move tmp to cdb
+udprules: fatal: unable to move test.tmp to /dev/nonexistent/cdb: file does not exist
 111
---- tcprules creates a cdb file
+--- udprules creates a cdb file
 0
---- tcprulescheck sees deny
+--- udprulescheck sees deny
 rule 1.2.3.4:
 deny connection
 0
---- tcprulescheck does not apply deny to another host
+--- udprulescheck does not apply deny to another host
 default:
 allow connection
 0
---- tcprules replaces a cdb file
+--- udprules replaces a cdb file
 0
---- tcprulescheck finds rule with address and info
+--- udprulescheck finds rule with address and info
 rule joe@127.0.0.1:
 set environment variable which=first
 allow connection
 0
---- tcprulescheck finds rule with address
+--- udprulescheck finds rule with address
 rule 18.23.0.32:
 set environment variable which=second
 allow connection
 0
---- tcprulescheck finds one-dot wildcard
+--- udprulescheck finds one-dot wildcard
 rule 127.:
 set environment variable which=third
 allow connection
 0
---- tcprulescheck finds zero-dot wildcard
+--- udprulescheck finds zero-dot wildcard
 rule :
 set environment variable which=fourth
 allow connection
 0
---- tcprules handles comments, address ranges, multiple variables
+--- udprules handles comments, address ranges, multiple variables
 0
 rule 127.0.:
 set environment variable which=first
@@ -193,7 +193,7 @@ default:
 allow connection
 default:
 allow connection
---- tcprules handles host names
+--- udprules handles host names
 0
 rule =known.edu:
 set environment variable which=known
@@ -208,7 +208,7 @@ rule =.abuser.edu:
 deny connection
 rule =.abuser.edu:
 deny connection
---- tcprulescheck searches for rules in the proper order
+--- udprulescheck searches for rules in the proper order
 0
 rule xyz@86.75.30.9:
 set environment variable which=first
