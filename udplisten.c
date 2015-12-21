@@ -39,6 +39,7 @@ char *banner = "";
 int flagremoteinfo = 1;
 int flagremotehost = 1;
 int flagparanoid = 0;
+int flagfd = 0;
 unsigned long timeout = 26;
 
 static stralloc tcpremoteinfo;
@@ -238,7 +239,7 @@ void usage(void)
 {
   strerr_warn1("\
 udplisten: usage: udplisten \
-[ -1UXpPhHrRoOdDqQv ] \
+[ -16UXpPhHrRoOdDqQv ] \
 [ -c limit ] \
 [ -x rules.cdb ] \
 [ -B banner ] \
@@ -296,7 +297,7 @@ main(int argc,char **argv)
   int s;
   int t;
  
-  while ((opt = getopt(argc,argv,"dDvqQhHrR1UXx:t:u:g:l:B:c:pPoOCn:L:8:0:")) != opteof)
+  while ((opt = getopt(argc,argv,"dDvqQhHrR1UXx:t:u:g:l:B:c:pPoO6Cn:L:8:0:")) != opteof)
     switch(opt) {
       case 'c': scan_ulong(optarg,&limit); break;
       case 'X': flagallownorules = 1; break;
@@ -322,6 +323,7 @@ main(int argc,char **argv)
       case 'g': scan_ulong(optarg,&gid); break;
       case '1': flag1 = 1; break;
       case 'l': localhost = optarg; break;
+      case '6': flagfd = 1; break;
       case 'C': // Ignore some parameters.
       case 'n':
       case 'L':
@@ -426,7 +428,15 @@ main(int argc,char **argv)
             
             ndelay_off(s);
             doit(s);
-            if ((fd_move(0,s) == -1) || (fd_copy(1,0) == -1))
+            int stdin_fd, stdout_fd;
+            if (flagfd) {
+              stdin_fd  = 6;
+              stdout_fd = 7;
+            } else {
+              stdin_fd  = 0;
+              stdout_fd = 1;
+            }
+            if ((fd_move(stdin_fd,t) == -1) || (fd_copy(stdout_fd,0) == -1))
               strerr_die2sys(111,DROP,"unable to set up descriptors: ");
             sig_uncatch(sig_child);
             sig_unblock(sig_child);

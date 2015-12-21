@@ -31,7 +31,7 @@ void nomem(void)
 void usage(void)
 {
   strerr_die1x(100,"udpconnect: usage: udpconnect \
-[ -hHrRdDqQv ] \
+[ -6hHrRdDqQv ] \
 [ -i localip ] \
 [ -p localport ] \
 [ -T timeoutconn ] \
@@ -44,6 +44,7 @@ int verbosity = 1;
 int flagremoteinfo = 1;
 int flagremotehost = 1;
 int flagfakehandshake = 0;
+int flagfd = 1;
 unsigned long itimeout = 26;
 unsigned long ctimeout[2] = { 2, 58 };
 
@@ -78,7 +79,7 @@ main(int argc,char **argv)
   
   int fd = 6;
  
-  while ((opt = getopt(argc,argv,"vqQhHrRi:p:t:T:l:1fFCn:L:8:0:")) != opteof)
+  while ((opt = getopt(argc,argv,"vqQhHrRi:p:t:T:6l:1fFCn:L:8:0:")) != opteof)
     switch(opt) {
       case 'v': verbosity = 2; break;
       case 'q': verbosity = 0; break;
@@ -95,6 +96,7 @@ main(int argc,char **argv)
 		break;
       case 'i': if (!ip4_scan(optarg,iplocal)) usage(); break;
       case 'p': scan_ulong(optarg,&u); portlocal = u; break;
+      case '6': flagfd = 0; break;
       case '1': fd = 0; break;
       case 'f': flagfakehandshake = 1; break;
       case 'F': flagfakehandshake = 0; break;
@@ -237,10 +239,12 @@ main(int argc,char **argv)
     }
   if (!pathexec_env("TCPREMOTEINFO",x)) nomem();
 
-  if (fd_move(fd,s) == -1)
-    strerr_die2sys(111,FATAL,"unable to set up descriptor 6: ");
-  if (fd_copy(fd+1,fd) == -1)
-    strerr_die2sys(111,FATAL,"unable to set up descriptor 7: ");
+  if (flagfd) {
+    if (fd_move(fd,s) == -1)
+      strerr_die2sys(111,FATAL,"unable to set up descriptor 6: ");
+    if (fd_copy(fd+1,fd) == -1)
+      strerr_die2sys(111,FATAL,"unable to set up descriptor 7: ");
+  }
   sig_uncatch(sig_pipe);
  
   pathexec(argv);
