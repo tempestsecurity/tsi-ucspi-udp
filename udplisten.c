@@ -420,7 +420,7 @@ main(int argc,char **argv)
             
             ndelay_off(s);
             doit(s);
-            if ((fd_move(fd,s) == -1) || (fd_copy(fd+1,0) == -1))
+            if ((fd_move(fd,s) == -1) || (fd_copy(fd+1,fd) == -1))
               strerr_die2sys(111,DROP,"unable to set up descriptors: ");
             sig_uncatch(sig_child);
             sig_unblock(sig_child);
