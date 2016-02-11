@@ -284,6 +284,34 @@ void sigchld()
   }
 }
 
+int exec_cmd(int ss, int s, int t, char *buf, int sizeof_buf, struct sockaddr_in *sa, socklen_t sl, int fd, char **argv)
+{
+  close(ss);
+  if (!t) {
+    t = recvfrom(s,buf,sizeof_buf,0,(struct sockaddr *)sa,&sl);
+    sendto(s,"",0,0,(struct sockaddr *)sa,sl);
+  }
+  if (gid) if (prot_gid(gid) == -1)
+    strerr_die2sys(111,FATAL,"unable to set gid: ");
+  if (uid) if (prot_uid(uid) == -1)
+    strerr_die2sys(111,FATAL,"unable to set uid: ");
+  if (connect(s,(struct sockaddr *)sa,sl)<0)
+    strerr_die2sys(111,FATAL,"unable to connect: ");
+  byte_copy(remoteip,4,(char *)&sa->sin_addr);
+  uint16_unpack_big((char *)&sa->sin_port,&remoteport);
+  ndelay_off(s);
+  doit(s);
+  if ((fd_move(fd,s) == -1) || (fd_copy(fd+1,fd) == -1))
+    strerr_die2sys(111,DROP,"unable to set up descriptors: ");
+  sig_uncatch(sig_child);
+  sig_unblock(sig_child);
+  sig_uncatch(sig_term);
+  sig_uncatch(sig_pipe);
+  pathexec(argv);
+  strerr_die4sys(111,DROP,"unable to run ",*argv,": ");
+  return -1;
+}
+
 main(int argc,char **argv)
 {
   char *hostname;
@@ -295,8 +323,9 @@ main(int argc,char **argv)
   int s;
   int t;
   int fd = 0;
+  int foreground = 0;
  
-  while ((opt = getopt(argc,argv,"dDvqQhHrR1UXx:t:u:g:l:B:c:pPoOCn:L:8:0:")) != opteof)
+  while ((opt = getopt(argc,argv,"dDvqQhHrR1UXx:t:u:g:l:B:c:pPoOCn:L:8:0:f")) != opteof)
     switch(opt) {
       case 'c': scan_ulong(optarg,&limit); break;
       case 'X': flagallownorules = 1; break;
@@ -322,6 +351,7 @@ main(int argc,char **argv)
       case 'g': scan_ulong(optarg,&gid); break;
       case '1': fd = 6; break;
       case 'l': localhost = optarg; break;
+      case 'f': foreground = 1; break;
       case 'C': // Ignore some parameters.
       case 'n':
       case 'L':
@@ -377,8 +407,10 @@ main(int argc,char **argv)
 
   localportstr[fmt_ulong(localportstr,localport)] = 0;
  
-  close(0);
-  close(1);
+  if (!foreground) {
+    close(0);
+    close(1);
+  }
   printstatus();
  
   for (;;) {
@@ -401,33 +433,12 @@ main(int argc,char **argv)
     ndelay_off(ss);
     if (t != -1) {
         ++numchildren; printstatus();
-     
+        if (foreground) {
+          return exec_cmd(ss, s, t, buf, sizeof(buf), &sa, sl, fd, argv);
+        }
         switch(fork()) {
           case 0:
-            close(ss);
-            if (!t) {
-                t = recvfrom(s,buf,sizeof(buf),0,(struct sockaddr *)&sa,&sl);
-                sendto(s,"",0,0,(struct sockaddr *)&sa,sl);
-            }
-            if (gid) if (prot_gid(gid) == -1)
-              strerr_die2sys(111,FATAL,"unable to set gid: ");
-            if (uid) if (prot_uid(uid) == -1)
-              strerr_die2sys(111,FATAL,"unable to set uid: ");
-            if (connect(s,(struct sockaddr *)&sa,sl)<0) 
-              strerr_die2sys(111,FATAL,"unable to connect: ");
-            byte_copy(remoteip,4,(char *)&sa.sin_addr);
-            uint16_unpack_big((char *)&sa.sin_port,&remoteport);
-            
-            ndelay_off(s);
-            doit(s);
-            if ((fd_move(fd,s) == -1) || (fd_copy(fd+1,fd) == -1))
-              strerr_die2sys(111,DROP,"unable to set up descriptors: ");
-            sig_uncatch(sig_child);
-            sig_unblock(sig_child);
-            sig_uncatch(sig_term);
-            sig_uncatch(sig_pipe);
-            pathexec(argv);
-            strerr_die4sys(111,DROP,"unable to run ",*argv,": ");
+            exec_cmd(ss, s, t, buf, sizeof(buf), &sa, sl, fd, argv);
           case -1:
             strerr_warn2(DROP,"unable to fork: ",&strerr_sys);
             --numchildren; printstatus();
