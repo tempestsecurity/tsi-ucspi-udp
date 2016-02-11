@@ -69,7 +69,7 @@ buffer b;
 
 /* ---------------------------- child */
 
-#define DROP "udppserver: warning: dropping connection, "
+#define DROP "udplisten: warning: dropping connection, "
 
 int flagdeny = 0;
 int flagallownorules = 0;
