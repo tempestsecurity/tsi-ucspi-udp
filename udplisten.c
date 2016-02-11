@@ -253,7 +253,6 @@ host port program",0);
 unsigned long limit = 40;
 unsigned long numchildren = 0;
 
-int flag1 = 0;
 unsigned long uid = 0;
 unsigned long gid = 0;
 
@@ -295,6 +294,7 @@ main(int argc,char **argv)
   unsigned long u;
   int s;
   int t;
+  int fd = 0;
  
   while ((opt = getopt(argc,argv,"dDvqQhHrR1UXx:t:u:g:l:B:c:pPoOCn:L:8:0:")) != opteof)
     switch(opt) {
@@ -320,7 +320,7 @@ main(int argc,char **argv)
                 if (x) scan_ulong(x,&gid); break;
       case 'u': scan_ulong(optarg,&uid); break;
       case 'g': scan_ulong(optarg,&gid); break;
-      case '1': flag1 = 1; break;
+      case '1': fd = 6; break;
       case 'l': localhost = optarg; break;
       case 'C': // Ignore some parameters.
       case 'n':
@@ -376,12 +376,6 @@ main(int argc,char **argv)
   ndelay_off(s);
 
   localportstr[fmt_ulong(localportstr,localport)] = 0;
-  if (flag1) {
-    buffer_init(&b,write,1,bspace,sizeof bspace);
-    buffer_puts(&b,localportstr);
-    buffer_puts(&b,"\n");
-    buffer_flush(&b);
-  }
  
   close(0);
   close(1);
@@ -426,7 +420,7 @@ main(int argc,char **argv)
             
             ndelay_off(s);
             doit(s);
-            if ((fd_move(0,s) == -1) || (fd_copy(1,0) == -1))
+            if ((fd_move(fd,s) == -1) || (fd_copy(fd+1,0) == -1))
               strerr_die2sys(111,DROP,"unable to set up descriptors: ");
             sig_uncatch(sig_child);
             sig_unblock(sig_child);
