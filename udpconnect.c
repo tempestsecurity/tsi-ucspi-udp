@@ -31,7 +31,7 @@ void nomem(void)
 void usage(void)
 {
   strerr_die1x(100,"udpconnect: usage: udpconnect \
-[ -6hHrRdDqQv ] \
+[ -1hHrRdDqQv ] \
 [ -i localip ] \
 [ -p localport ] \
 [ -T timeoutconn ] \
@@ -238,9 +238,9 @@ main(int argc,char **argv)
   if (!pathexec_env("TCPREMOTEINFO",x)) nomem();
 
   if (fd_move(fd,s) == -1)
-    strerr_die2sys(111,FATAL,"unable to set up descriptor 6: ");
+    strerr_die2sys(111,FATAL,"unable to set up descriptor stdin: ");
   if (fd_copy(fd+1,fd) == -1)
-    strerr_die2sys(111,FATAL,"unable to set up descriptor 7: ");
+    strerr_die2sys(111,FATAL,"unable to set up descriptor stdout: ");
   sig_uncatch(sig_pipe);
  
   pathexec(argv);
