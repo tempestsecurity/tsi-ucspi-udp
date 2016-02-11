@@ -22,7 +22,7 @@ compile auto-str.c buffer.h readwrite.h exit.h
 
 auto_home.c: \
 auto-str conf-home
-	#./auto-str auto_home `head -1 conf-home` > auto_home.c
+	./auto-str auto_home `head -1 conf-home` > auto_home.c
 
 auto_home.o: \
 compile auto_home.c
@@ -288,7 +288,7 @@ choose compile load trysgprm.c hassgprm.h1 hassgprm.h2
 hasshsgr.h: \
 choose compile load tryshsgr.c hasshsgr.h1 hasshsgr.h2 chkshsgr \
 warn-shsgr
-	#./chkshsgr || ( cat warn-shsgr; exit 1 )
+	./chkshsgr || ( cat warn-shsgr; exit 1 )
 	./choose clr tryshsgr hasshsgr.h1 hasshsgr.h2 > hasshsgr.h
 
 haswaitp.h: \
