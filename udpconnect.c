@@ -31,7 +31,7 @@ void nomem(void)
 void usage(void)
 {
   strerr_die1x(100,"udpconnect: usage: udpconnect \
-[ -1hHrRdDqQv ] \
+[ -6hHrRdDqQv ] \
 [ -i localip ] \
 [ -p localport ] \
 [ -T timeoutconn ] \
@@ -78,7 +78,7 @@ main(int argc,char **argv)
   
   int fd = 6;
  
-  while ((opt = getopt(argc,argv,"vqQhHrRi:p:t:T:l:1fFCn:L:8:0:")) != opteof)
+  while ((opt = getopt(argc,argv,"vqQhHrRi:p:t:T:l:6fFCn:L:8:0:")) != opteof)
     switch(opt) {
       case 'v': verbosity = 2; break;
       case 'q': verbosity = 0; break;
@@ -95,7 +95,7 @@ main(int argc,char **argv)
 		break;
       case 'i': if (!ip4_scan(optarg,iplocal)) usage(); break;
       case 'p': scan_ulong(optarg,&u); portlocal = u; break;
-      case '1': fd = 0; break;
+      case '6': fd = 0; break;
       case 'f': flagfakehandshake = 1; break;
       case 'F': flagfakehandshake = 0; break;
       case 'C': // Ignore some parameters.
