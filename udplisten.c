@@ -238,7 +238,7 @@ void usage(void)
 {
   strerr_warn1("\
 udplisten: usage: udplisten \
-[ -1UXpPhHrRoOdDqQv ] \
+[ -6UXpPhHrRoOdDqQv ] \
 [ -c limit ] \
 [ -x rules.cdb ] \
 [ -B banner ] \
@@ -325,7 +325,7 @@ main(int argc,char **argv)
   int fd = 0;
   int foreground = 0;
  
-  while ((opt = getopt(argc,argv,"dDvqQhHrR1UXx:t:u:g:l:B:c:pPoOCn:L:8:0:f")) != opteof)
+  while ((opt = getopt(argc,argv,"dDvqQhHrR6UXx:t:u:g:l:B:c:pPoOCn:L:8:0:f")) != opteof)
     switch(opt) {
       case 'c': scan_ulong(optarg,&limit); break;
       case 'X': flagallownorules = 1; break;
@@ -349,7 +349,7 @@ main(int argc,char **argv)
                 if (x) scan_ulong(x,&gid); break;
       case 'u': scan_ulong(optarg,&uid); break;
       case 'g': scan_ulong(optarg,&gid); break;
-      case '1': fd = 6; break;
+      case '6': fd = 6; break;
       case 'l': localhost = optarg; break;
       case 'f': foreground = 1; break;
       case 'C': // Ignore some parameters.
