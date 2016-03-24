@@ -31,10 +31,12 @@ void nomem(void)
 void usage(void)
 {
   strerr_die1x(100,"udpconnect: usage: udpconnect \
-[ -6hHrRdDqQv ] \
+[ -U6hHrRdDqQv ] \
 [ -i localip ] \
 [ -p localport ] \
 [ -T timeoutconn ] \
+[ -g gid ] \
+[ -u uid ] \
 [ -l localname ] \
 [ -t timeoutinfo ] \
 host port program");
@@ -46,6 +48,9 @@ int flagremotehost = 1;
 int flagfakehandshake = 0;
 unsigned long itimeout = 26;
 unsigned long ctimeout[2] = { 2, 58 };
+
+unsigned long uid = 0;
+unsigned long gid = 0;
 
 char iplocal[4] = { 0,0,0,0 };
 uint16 portlocal = 0;
@@ -78,7 +83,7 @@ main(int argc,char **argv)
   
   int fd = 6;
  
-  while ((opt = getopt(argc,argv,"vqQhHrRi:p:t:T:l:6fFCn:L:8:0:")) != opteof)
+  while ((opt = getopt(argc,argv,"vqQhHrRi:p:t:T:l:6fFCn:L:8:0:Uu:g:")) != opteof)
     switch(opt) {
       case 'v': verbosity = 2; break;
       case 'q': verbosity = 0; break;
@@ -98,6 +103,10 @@ main(int argc,char **argv)
       case '6': fd = 0; break;
       case 'f': flagfakehandshake = 1; break;
       case 'F': flagfakehandshake = 0; break;
+      case 'U': x = env_get("UID"); if (x) scan_ulong(x,&uid);
+                x = env_get("GID"); if (x) scan_ulong(x,&gid); break;
+      case 'u': scan_ulong(optarg,&uid); break;
+      case 'g': scan_ulong(optarg,&gid); break;
       case 'C': // Ignore some parameters.
       case 'n':
       case 'L':
@@ -190,7 +199,12 @@ main(int argc,char **argv)
   _exit(111);
 
   CONNECTED:
-  
+
+  if (gid) if (prot_gid(gid) == -1)
+    strerr_die2sys(111,FATAL,"unable to set gid: ");
+  if (uid) if (prot_uid(uid) == -1)
+    strerr_die2sys(111,FATAL,"unable to set uid: ");
+
   ndelay_off(s);
 
   if (!pathexec_env("PROTO","UDP")) nomem();
