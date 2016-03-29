@@ -3,6 +3,7 @@
 SHELL=/bin/sh
 
 default: it
+	tar cvzf ucspi-udp.tgz --owner=root --group=root udpcat udpconnect udplisten udppipe udprules udprulescheck
 
 alloc.o: \
 compile alloc.c alloc.h error.h
@@ -136,6 +137,7 @@ warn-auto.sh choose.sh conf-home
 	chmod 755 choose
 
 clean:
+	rm -f ucspi-udp.tgz
 	rm -f *.a *.o udplisten udprules udprulescheck recordio udpconnect
 	rm -f udpcat rts udppipe install instcheck auto-str chkshsgr udpcat
 	rm -f choose compile load makelib fork.h hassgact.h hassgprm.h hasshsgr.h
